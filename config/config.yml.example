@@ -1,0 +1,17 @@
+# 个人私人令牌，用于 V5 鉴权
+access_token: xxxxxxxx
+api_prefix: https://gitee.com/api/v5
+# 用户在 Gitee 上的 ID
+user_id: 123456
+# 用户名
+user_name: xxx
+# 默认企业 path
+default_ent_path: oschina
+# 非仓库目录下执行 gitee cli 命令默认仓库全路径（配置你比较常用的仓库）
+default_path_with_namespace: oschina/gitee
+# 专业版构建命令前缀
+premium_build_prefix: premium_ci_build
+# 企业版构建命令前缀
+saas_build_prefix: ci_deploy
+# cookie 用于企业版 API 鉴权
+cookies_jar: xxxxxxx
