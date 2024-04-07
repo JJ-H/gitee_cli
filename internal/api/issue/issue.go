@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gitee_cli/utils/http_utils"
+	"gitee_cli/internal/api/issue_state"
 )
 
 const Endpoint = "https://api.gitee.com/enterprises/%d/issues"
@@ -15,6 +16,7 @@ type Issue struct {
 	Title       string `json:"title"`
 	Url         string `json:"issue_url"`
 	Description string `json:"description"`
+	IssueState  issue_state.IssueState `json:"issue_state"`
 }
 
 func Find(enterpriseId int, params map[string]string) ([]Issue, error) {
@@ -49,6 +51,25 @@ func Create(enterpriseId int, payload map[string]interface{}) (Issue, error) {
 
 	if giteeClient.IsFail() {
 		return Issue{}, errors.New("创建工作项失败！")
+	}
+
+	issue := Issue{}
+
+	data, _ := giteeClient.GetRespBody()
+	json.Unmarshal(data, &issue)
+
+	return issue, nil
+}
+
+func Update(enterpriseId int, issueId int, payload map[string]interface{}) (Issue, error) {
+	url := fmt.Sprintf("%s/%d", Endpoint, enterpriseId, issueId)
+	giteeClient := http_utils.NewGiteeClient("PUT", url, nil, payload)
+	giteeClient.SetCookieAuth()
+
+	giteeClient.Do()
+
+	if giteeClient.IsFail() {
+		return Issue{}, errors.New("更新工作项失败！")
 	}
 
 	issue := Issue{}

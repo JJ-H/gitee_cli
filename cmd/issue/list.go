@@ -44,13 +44,14 @@ var ListCmd = &cobra.Command{
 
 		columns := []table.Column{
 			{Title: "Ident", Width: 8},
-			{Title: "Title", Width: 60},
+			{Title: "Title", Width: 50},
+			{Title: "State", Width: 10},
 		}
 
 		rows := make([]table.Row, 0)
 
 		for _, issue := range _issues {
-			rows = append(rows, table.Row{issue.Ident, issue.Title})
+			rows = append(rows, table.Row{issue.Ident, issue.Title, issue.IssueState.Title})
 		}
 
 		issueTable := tui.NewTable(enterprise, tui.Issue, columns, rows)
