@@ -7,6 +7,16 @@
 ## Usage
 
 ### 构建方式
+
+#### Homebrew 安装
+> 目前暂时还未向官方仓库提交 formula 文件，需手动添加 tab
+```shell
+brew tap JJ-H/tap
+
+brew install gitee
+```
+
+#### 手动安装
 ```shell
 git clone https://github.com/JJ-H/gitee_cli.git
 
