@@ -41,11 +41,7 @@ user_id: xxxxx
 # 用户名
 user_name: xxx
 # 非仓库目录下执行 gitee cli 命令默认仓库全路径（配置你比较常用的仓库）
-default_path_with_namespace: oschina/gitee
-# 专业版构建命令前缀
-premium_build_prefix: premium_ci_build
-# 企业版构建命令前缀
-saas_build_prefix: ci_deploy
+default_path_with_namespace: test/test
 # cookie 用于企业版 API 鉴权（由于加密登录的问题，此处暂时需要手动复制 cookie[可使用 gitee config cookie xxxxxx]）
 cookies_jar: xxxxxxx
 ```
