@@ -40,6 +40,8 @@ var ListCmd = &cobra.Command{
 		payload["search"] = search
 		payload["page"] = "1"
 		payload["per_page"] = strconv.Itoa(limit)
+		payload["sort"] = "created_at"
+		payload["direction"] = "desc"
 		_issues, _ := issue.Find(enterprise.Id, payload)
 
 		columns := []table.Column{
