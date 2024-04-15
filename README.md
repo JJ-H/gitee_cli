@@ -162,7 +162,7 @@ Flags:
 - 列出当前所在仓库下我审查的 Pull Request `gitee pr list [flags]`
     > 说明：列表模式下，按 c 将拷贝 pull request iid 至粘贴板，按 v 预览详情，按 d 预览 diff，回车使用浏览器打开
 
-    ![img.png](doc/images/pull_request_list.png)
+    ![img.png](doc/images/gitee_pr.gif)
 - 根据 commit 找到对应的被合入至当前分支的 Pull Request `gitee pr list -c <commit>`
     ```shell
     ➜ ~ gitee pr -c "80b4ef95c0d"
@@ -199,9 +199,9 @@ Press q to quit.
 ```
 
 - issue 列表
-    > 说明：列表模式下，按 c 将拷贝 issue ident 至粘贴板，按 v 预览详情，回车使用浏览器打开
+    > 说明：列表模式下，按 c 将拷贝 issue ident 至粘贴板，按 v 预览详情，按 s 变更状态，回车使用浏览器打开
 
-    ![img.png](doc/images/issue_list.png)
+    ![img.png](doc/images/gitee_issue.gif)
 
 ### SSH Key 相关
 ```shell
