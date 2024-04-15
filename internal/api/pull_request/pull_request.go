@@ -7,6 +7,8 @@ import (
 	"gitee_cli/config"
 	"gitee_cli/utils/git_utils"
 	"gitee_cli/utils/http_utils"
+	"github.com/fatih/color"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -50,7 +52,7 @@ func Note(iid int, note string) error {
 	payload := map[string]string{"body": note}
 	giteeClient := http_utils.NewGiteeClient("POST", url, nil, payload)
 
-	giteeClient, _ = giteeClient.Do()
+	giteeClient.Do()
 	if giteeClient.IsFail() {
 		return errors.New(fmt.Sprintf("评论 pr %d 失败！", iid))
 	}
@@ -199,10 +201,12 @@ func CreatePr(baseRepo, baseRef, headRef, title, body, assignees, testers string
 		"testers":             testers,
 		"draft":               draft,
 		"prune_source_branch": prune,
+		"assignees_number":    len(strings.Split(assignees, ",")),
+		"testers_number":      len(strings.Split(testers, ",")),
 	}
 
 	giteeClient := http_utils.NewGiteeClient("POST", url, nil, payload)
-	giteeClient, err := giteeClient.Do()
+	err := giteeClient.Do()
 
 	if err != nil {
 		return PullRequest{}, errors.New("GiteeCilent 异常！")
@@ -273,7 +277,7 @@ func CreateLightPr(baseRepo, baseRef, prTitle string) (PullRequest, error) {
 func Detail(iid, repoPath string) (PullRequest, error) {
 	url := fmt.Sprintf("https://gitee.com/api/v5/repos/%s/pulls/%s", repoPath, iid)
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
-	if _, err := giteeClient.Do(); err != nil || giteeClient.IsFail() {
+	if err := giteeClient.Do(); err != nil || giteeClient.IsFail() {
 		return PullRequest{}, errors.New("获取 Pull Request 详情失败")
 	}
 
@@ -289,10 +293,40 @@ func FetchPatchContent(iid, repoPath string) (string, error) {
 	url := fmt.Sprintf("https://gitee.com/%s/pulls/%s.diff", repoPath, iid)
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
 	giteeClient.SetCookieAuth()
-	if _, err := giteeClient.Do(); err != nil || giteeClient.IsFail() {
+	if err := giteeClient.Do(); err != nil || giteeClient.IsFail() {
 		return "", errors.New("获取 Pull Request 补丁内容失败")
 	}
 	data, _ := giteeClient.GetRespBody()
 
 	return string(data), nil
+}
+
+func Close(iid string) {
+	pathWithNamespace, err := git_utils.ParseCurrentRepo()
+	if err != nil {
+		pathWithNamespace = config.Conf.DefaultPathWithNamespace
+	}
+	url := fmt.Sprintf("https://gitee.com/api/v5/repos/%s/pulls/%s", pathWithNamespace, iid)
+	payload := map[string]string{"state": "closed"}
+	giteeClient := http_utils.NewGiteeClient("PATCH", url, nil, payload)
+	if giteeClient.Do(); giteeClient.IsFail() {
+		color.Red("关闭 PR 失败！")
+		os.Exit(1)
+	}
+	color.Green("关闭 PR 成功🏅")
+}
+
+func Review(iid string) {
+	pathWithNamespace, err := git_utils.ParseCurrentRepo()
+	if err != nil {
+		pathWithNamespace = config.Conf.DefaultPathWithNamespace
+	}
+	url := fmt.Sprintf("https://gitee.com/api/v5/repos/%s/pulls/%s/review", pathWithNamespace, iid)
+	giteeClient := http_utils.NewGiteeClient("POST", url, nil, nil)
+	giteeClient.Do()
+	if giteeClient.IsFail() {
+		color.Red("审查通过失败！")
+		os.Exit(1)
+	}
+	color.Green("审查通过成功🏅")
 }

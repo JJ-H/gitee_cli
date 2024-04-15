@@ -14,4 +14,6 @@ func init() {
 	Pr.AddCommand(ListCmd)
 	Pr.AddCommand(CreateCmd)
 	Pr.AddCommand(CommentCmd)
+	Pr.AddCommand(CloseCmd)
+	Pr.AddCommand(ReviewCmd)
 }

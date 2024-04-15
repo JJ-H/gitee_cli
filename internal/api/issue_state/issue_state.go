@@ -16,7 +16,7 @@ func ListWithIssue(entId int, issueId int) ([]IssueState, error) {
 	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issues/%d/issue_states", entId, issueId)
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
 	giteeClient.SetCookieAuth()
-	if _, err := giteeClient.Do(); err != nil {
+	if err := giteeClient.Do(); err != nil {
 		return nil, err
 	}
 

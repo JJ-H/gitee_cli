@@ -17,7 +17,7 @@ func List() ([]Enterprise, error) {
 	url := "https://api.gitee.com/enterprises/list"
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
 	giteeClient.SetCookieAuth()
-	_, err := giteeClient.Do()
+	err := giteeClient.Do()
 	if err != nil || giteeClient.IsFail() {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func List() ([]Enterprise, error) {
 func Find(path string) (Enterprise, error) {
 	url := fmt.Sprintf("https://gitee.com/api/v5/enterprises/%s", path)
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
-	if _, err := giteeClient.Do(); err != nil {
+	if err := giteeClient.Do(); err != nil {
 		return Enterprise{}, errors.New("查询企业失败！")
 	}
 	data, _ := giteeClient.GetRespBody()

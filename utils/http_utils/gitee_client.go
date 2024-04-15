@@ -45,12 +45,11 @@ func NewGiteeClient(method, urlString string, query map[string]string, payload i
 	}
 }
 
-func (g *GiteeClient) SetHeaders(headers map[string]string) *GiteeClient {
+func (g *GiteeClient) SetHeaders(headers map[string]string) {
 	g.Headers = headers
-	return g
 }
 
-func (g *GiteeClient) Do() (*GiteeClient, error) {
+func (g *GiteeClient) Do() error {
 	// 多次调用首先置空
 	g.Response = nil
 	_payload, _ := json.Marshal(g.Payload)
@@ -75,10 +74,10 @@ func (g *GiteeClient) Do() (*GiteeClient, error) {
 	var err error
 
 	if resp, err = client.Do(req); err != nil {
-		return g, err
+		return err
 	}
 	g.Response = resp
-	return g, nil
+	return nil
 }
 
 func (g *GiteeClient) IsSuccess() bool {

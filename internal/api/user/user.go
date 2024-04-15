@@ -74,7 +74,7 @@ func BasicUser() (User, error) {
 	url := "https://api.gitee.com/enterprises/users"
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
 	giteeClient.SetCookieAuth()
-	_, err := giteeClient.Do()
+	err := giteeClient.Do()
 	if err != nil || giteeClient.IsFail() {
 		return User{}, errors.New("查询用户失败！")
 	}

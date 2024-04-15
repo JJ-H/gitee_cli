@@ -10,7 +10,6 @@ require (
 	github.com/charmbracelet/glamour v0.7.0
 	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/fatih/color v1.16.0
-	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/spf13/cobra v1.8.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
@@ -38,6 +37,7 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/yuin/goldmark v1.7.0 // indirect

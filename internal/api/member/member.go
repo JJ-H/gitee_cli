@@ -18,7 +18,7 @@ func Find(enterpriseId int, params map[string]string) ([]Member, error) {
 	giteeClient := http_utils.NewGiteeClient("GET", url, params, nil)
 	giteeClient.SetCookieAuth()
 
-	_, err := giteeClient.Do()
+	err := giteeClient.Do()
 	if err != nil || giteeClient.IsFail() {
 		return []Member{}, err
 	}

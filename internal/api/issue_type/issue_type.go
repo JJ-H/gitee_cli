@@ -40,7 +40,7 @@ func List(issueType int, entPath string) ([]IssueType, error) {
 	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issue_types/enterprise_issue_types?category=%s&page=1&per_page=1000&state=1", ent.Id, category)
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
 	giteeClient.SetCookieAuth()
-	if _, err := giteeClient.Do(); err != nil {
+	if err := giteeClient.Do(); err != nil {
 		return nil, err
 	}
 
@@ -72,7 +72,7 @@ func FetchTemplate(issueTypeId, entId int) (string, error) {
 	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issue_types/%d", entId, issueTypeId)
 	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
 	giteeClient.SetCookieAuth()
-	if _, err := giteeClient.Do(); err != nil {
+	if err := giteeClient.Do(); err != nil {
 		return "", errors.New("获取模板失败！")
 	}
 	issueType := IssueType{}

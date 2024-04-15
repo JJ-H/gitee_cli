@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitee_cli/utils/http_utils"
 	"gitee_cli/internal/api/issue_state"
+	"gitee_cli/utils/http_utils"
 )
 
 const Endpoint = "https://api.gitee.com/enterprises/%d/issues"
 
 type Issue struct {
-	Id          int    `json:"id"`
-	Ident       string `json:"ident"`
-	Title       string `json:"title"`
-	Url         string `json:"issue_url"`
-	Description string `json:"description"`
+	Id          int                    `json:"id"`
+	Ident       string                 `json:"ident"`
+	Title       string                 `json:"title"`
+	Url         string                 `json:"issue_url"`
+	Description string                 `json:"description"`
 	IssueState  issue_state.IssueState `json:"issue_state"`
 }
 
@@ -24,7 +24,7 @@ func Find(enterpriseId int, params map[string]string) ([]Issue, error) {
 	giteeClient := http_utils.NewGiteeClient("GET", url, params, nil)
 	giteeClient.SetCookieAuth()
 
-	_, err := giteeClient.Do()
+	err := giteeClient.Do()
 	if err != nil || giteeClient.IsFail() {
 		return []Issue{}, err
 	}
