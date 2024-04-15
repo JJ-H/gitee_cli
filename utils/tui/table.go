@@ -5,8 +5,10 @@ import (
 	"gitee_cli/config"
 	"gitee_cli/internal/api/enterprises"
 	"gitee_cli/internal/api/issue"
+	"gitee_cli/internal/api/issue_state"
 	"gitee_cli/internal/api/pull_request"
 	"gitee_cli/utils/git_utils"
+	"gitee_cli/utils/tui/selector_tui"
 	"github.com/atotto/clipboard"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
@@ -103,6 +105,43 @@ func (t Table) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "ctrl+c":
 			t.SelectedKey = ""
 			return t, tea.Quit
+		case "s":
+			if t.ResourceType == Issue {
+				targetIssue, err := issue.Detail(t.Enterprise.Id, t.table.SelectedRow()[0])
+				if err != nil {
+					color.Red("获取任务详情失败！")
+					return t, tea.Quit
+				}
+				if issueStates, err := issue_state.ListWithIssue(t.Enterprise.Id, targetIssue.Id); err == nil {
+					var model tea.Model
+					options := make([]string, 0)
+					optionMap := make(map[string]int, 0)
+					optionMap, options = issue_state.FillOptions(issueStates, optionMap, options)
+					promote := "请选择要变更的状态"
+					selector := selector_tui.NewMapSelector(optionMap, options, promote, true)
+					if model, err = selector.Run(); err != nil {
+						color.Red("任务状态选择器加载失败！")
+						os.Exit(1)
+					}
+					mapSelector, _ := model.(selector_tui.MapSelector)
+
+					issueStateId, err := mapSelector.SelectedValue()
+					if err != nil {
+						color.Red(err.Error())
+						os.Exit(1)
+					}
+					if targetIssue, err = issue.Update(t.Enterprise.Id, targetIssue.Id, map[string]interface{}{
+						"issue_state_id": issueStateId,
+					}); err != nil {
+						color.Red(err.Error())
+						os.Exit(1)
+					}
+					return t, tea.ClearScrollArea
+				} else {
+					color.Red("获取任务状态列表失败！")
+					os.Exit(1)
+				}
+			}
 		case "v":
 			if t.ResourceType == Issue {
 				if _issue, err := issue.Detail(t.Enterprise.Id, t.table.SelectedRow()[0]); err == nil {

@@ -14,13 +14,17 @@ type MapSelector struct {
 	Cursor     int
 }
 
-func NewMapSelector(optionsMap map[string]int, options []string, promote string) *tea.Program {
+func NewMapSelector(optionsMap map[string]int, options []string, promote string, altScreen bool) *tea.Program {
 	mapSelector := MapSelector{
 		OptionsMap: optionsMap,
 		Options:    options,
 		Promote:    promote,
 	}
-	return tea.NewProgram(mapSelector)
+	if altScreen {
+		return tea.NewProgram(mapSelector, tea.WithAltScreen())
+	} else {
+		return tea.NewProgram(mapSelector)
+	}
 }
 
 func (m MapSelector) Init() tea.Cmd {

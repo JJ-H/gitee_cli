@@ -62,7 +62,7 @@ func Create(enterpriseId int, payload map[string]interface{}) (Issue, error) {
 }
 
 func Update(enterpriseId int, issueId int, payload map[string]interface{}) (Issue, error) {
-	url := fmt.Sprintf("%s/%d", Endpoint, enterpriseId, issueId)
+	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issues/%d", enterpriseId, issueId)
 	giteeClient := http_utils.NewGiteeClient("PUT", url, nil, payload)
 	giteeClient.SetCookieAuth()
 

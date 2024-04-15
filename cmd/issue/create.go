@@ -94,7 +94,7 @@ var CreateCmd = &cobra.Command{
 			optionMap = make(map[string]int, 0)
 			optionMap, options = issue.FillOptions(candidateTasks, optionMap, options)
 			promote = "请选择要关联的父任务"
-			selector := selector_tui.NewMapSelector(optionMap, options, promote)
+			selector := selector_tui.NewMapSelector(optionMap, options, promote, false)
 			if model, err = selector.Run(); err != nil {
 				color.Red("父任务选择器加载失败！")
 				return
@@ -113,7 +113,7 @@ var CreateCmd = &cobra.Command{
 			optionMap = make(map[string]int, 0)
 			optionMap, options = member.FillOptions(candidateAssignees, optionMap, options)
 			promote = "请选择指派的负责人"
-			selector = selector_tui.NewMapSelector(optionMap, options, promote)
+			selector = selector_tui.NewMapSelector(optionMap, options, promote, false)
 			if model, err = selector.Run(); err != nil {
 				color.Red("负责人选择器加载失败！")
 				return
