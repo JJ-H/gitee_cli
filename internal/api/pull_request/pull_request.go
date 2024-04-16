@@ -328,5 +328,5 @@ func Review(iid string) {
 		color.Red("审查通过失败！")
 		os.Exit(1)
 	}
-	color.Green("审查通过成功🏅")
+	color.Green("审查通过🏅")
 }

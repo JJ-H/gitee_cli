@@ -165,10 +165,10 @@ Flags:
     ![img.png](doc/images/gitee_pr.gif)
 - 根据 commit 找到对应的被合入至当前分支的 Pull Request `gitee pr list -c <commit>`
     ```shell
-    ➜ ~ gitee pr -c "80b4ef95c0d"
+    ➜ ~ gitee pr list -c "80b4ef95c0d"
     请在仓库目录下执行该命令！
     ➜ ~ cd /home/git/gitee
-    ➜ gitee (master) ✔ gitee pr -c "80b4ef95c0d"
+    ➜ gitee (master) ✔ gitee pr list -c "80b4ef95c0d"
     该 commit 由 PR: 「修改仓库模糊查询，支持namespace级联查询，修复全英文字符查询时只匹配path问题」 合入，访问地址: https://gitee.com/hightest/settings/pulls19977
     ```
 - 创建 pull_request
@@ -183,6 +183,16 @@ Flags:
     ```shell
     ➜ gitee (master) ✔ gitee pr note -i 19995 /approve
     评论成功！
+    ```
+- 评审通过 Pull Request
+    ```shell
+    ➜ gitee (master) ✔ gitee pr review 19995
+    审查通过🏅
+    ```
+- 关闭 Pull Request
+    ```shell
+    ➜ gitee (master) ✔ gitee pr close 19995
+    关闭 PR 成功🏅
     ```
   
 ### Issue 相关
