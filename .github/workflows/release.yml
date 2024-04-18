@@ -61,4 +61,5 @@ jobs:
           goarch: ${{ matrix.goarch }}
           goversion: 1.19
           binary_name: "gitee"
+          sha256sum: true
           extra_files: LICENSE README.md
