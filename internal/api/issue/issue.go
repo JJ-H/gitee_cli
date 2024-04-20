@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"gitee_cli/internal/api/issue_state"
+	"gitee_cli/internal/api/issue_type"
+	"gitee_cli/internal/api/user"
 	"gitee_cli/utils/http_utils"
 )
 
@@ -17,6 +19,8 @@ type Issue struct {
 	Url         string                 `json:"issue_url"`
 	Description string                 `json:"description"`
 	IssueState  issue_state.IssueState `json:"issue_state"`
+	Assignee    user.Member            `json:"assignee"`
+	IssueType   issue_type.IssueType   `json:"issue_type"`
 }
 
 func Find(enterpriseId int, params map[string]string) ([]Issue, error) {

@@ -47,13 +47,19 @@ var ListCmd = &cobra.Command{
 		columns := []table.Column{
 			{Title: "Ident", Width: 8},
 			{Title: "Title", Width: 50},
+			{Title: "Assignee", Width: 12},
+			{Title: "Type", Width: 12},
 			{Title: "State", Width: 10},
 		}
 
 		rows := make([]table.Row, 0)
 
 		for _, issue := range _issues {
-			rows = append(rows, table.Row{issue.Ident, issue.Title, issue.IssueState.Title})
+			userName := issue.Assignee.Remark
+			if userName == "" {
+				userName = issue.Assignee.UserName
+			}
+			rows = append(rows, table.Row{issue.Ident, issue.Title, userName, issue.IssueType.Title, issue.IssueState.Title})
 		}
 
 		issueTable := tui.NewTable(enterprise, tui.Issue, columns, rows)
