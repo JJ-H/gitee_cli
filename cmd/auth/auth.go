@@ -17,7 +17,7 @@ var (
 
 var AuthCmd = &cobra.Command{
 	Use:   "auth",
-	Short: "Authenticate Gitee CLI with gitee selector_tui",
+	Short: "Authenticate Gitee CLI with gitee enterprise",
 	Run: func(cmd *cobra.Command, args []string) {
 		if CookiesFile != "" {
 			// Read cookies from file

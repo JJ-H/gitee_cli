@@ -193,6 +193,10 @@ func (t Table) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					url = fmt.Sprintf("https://e.gitee.com/%s/repos/%s/pulls/%s", strings.Split(path, "/")[0], path, t.SelectedKey)
 				}
 				browser.OpenURL(url)
+			} else if t.ResourceType == Enterprise {
+				path := t.table.SelectedRow()[2]
+				url := fmt.Sprintf("https://e.gitee.com/%s", path)
+				browser.OpenURL(url)
 			} else {
 				return t, tea.Quit
 			}
