@@ -1,0 +1,14 @@
+{
+  "name": "@jj-h/gitee-linux-amd64",
+  "version": "0.1.2",
+  "description": "Gitee CLI is a tool which interact with gitee server seamlessly via terminal",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

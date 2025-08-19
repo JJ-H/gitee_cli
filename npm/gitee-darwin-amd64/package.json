@@ -1,0 +1,14 @@
+{
+  "name": "@jj-h/gitee-darwin-amd64",
+  "version": "0.1.2",
+  "description": "Gitee CLI is a tool which interact with gitee server seamlessly via terminal",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -9,15 +9,16 @@ import (
 	sshkey "gitee_cli/cmd/ssh-key"
 	"gitee_cli/cmd/user"
 	"gitee_cli/utils"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var RootCmd = &cobra.Command{
 	Use:     "gitee",
 	Short:   "Gitee In terminal",
 	Long:    "Gitee CLI is a tool which interact with gitee server seamlessly via terminal",
-	Version: "0.0.6",
+	Version: "0.1.2",
 }
 
 func init() {

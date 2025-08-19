@@ -1,0 +1,14 @@
+{
+  "name": "@jj-h/gitee-windows-arm64",
+  "version": "0.1.2",
+  "description": "Gitee CLI is a tool which interact with gitee server seamlessly via terminal",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

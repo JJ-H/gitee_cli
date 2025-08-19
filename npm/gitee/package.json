@@ -1,0 +1,38 @@
+{
+  "name": "@jj-h/gitee",
+  "version": "0.1.2",
+  "description": "Gitee CLI is a tool which interact with gitee server seamlessly via terminal",
+  "main": "./bin/index.js",
+  "bin": {
+    "mcp-gitee": "bin/index.js"
+  },
+  "optionalDependencies": {
+    "@jj-h/gitee-darwin-amd64": "0.1.2",
+    "@jj-h/gitee-darwin-arm64": "0.1.2",
+    "@jj-h/gitee-linux-amd64": "0.1.2",
+    "@jj-h/gitee-linux-arm64": "0.1.2",
+    "@jj-h/gitee-windows-amd64": "0.1.2",
+    "@jj-h/gitee-windows-arm64": "0.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/JJ-H/gitee_cli.git"
+  },
+  "keywords": [
+    "gitee",
+    "cli",
+    "gitee_cli"
+  ],
+  "author": {
+    "name": "Gitee",
+    "url": "https://gitee.com/JJ-H"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitee.com/JJ-H/gitee_cli/issues"
+  },
+  "homepage": "https://gitee.com/JJ-H/gitee_cli#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
