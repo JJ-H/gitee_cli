@@ -8,6 +8,11 @@
 
 ### 构建方式
 
+#### NPM 安装（推荐）
+```shell
+npm i -g @jj-h/gitee@latest
+```
+
 #### Homebrew 安装
 > 目前暂时还未向官方仓库提交 formula 文件，需手动添加 tab
 ```shell
