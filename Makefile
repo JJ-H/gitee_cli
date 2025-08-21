@@ -1,6 +1,6 @@
 # Makefile for cross-platform build
 BINARY_NAME = gitee
-NPM_VERSION = 0.1.2
+NPM_VERSION = 0.1.3
 GO = go
 OSES = darwin linux windows
 ARCHS = amd64 arm64
