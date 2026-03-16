@@ -52,6 +52,20 @@ var ListCmd = &cobra.Command{
 			return
 		}
 
+		jsonFlag, _ := cmd.Flags().GetBool("json")
+		if jsonFlag {
+			utils.PrintJSON(pullRequests)
+			return
+		}
+
+		if convertEntUrl {
+			os.Setenv("CONVERT_ENT_URL", "true")
+		}
+
+		defer func() {
+			os.Unsetenv("CONVERT_ENT_URL")
+		}()
+
 		columns := []table.Column{
 			{Title: "PR 标题", Width: 60},
 			{Title: "IID", Width: 10},
@@ -80,14 +94,6 @@ var ListCmd = &cobra.Command{
 		}
 
 		prTable := tui.NewTable(enterprises.Enterprise{}, tui.PullRequest, columns, rows)
-
-		if convertEntUrl {
-			os.Setenv("CONVERT_ENT_URL", "true")
-		}
-
-		defer func() {
-			os.Unsetenv("CONVERT_ENT_URL")
-		}()
 		//var model tea.Model
 		var err error
 		if _, err = prTable.Run(); err != nil {

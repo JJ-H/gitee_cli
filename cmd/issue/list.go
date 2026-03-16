@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitee_cli/internal/api/issue"
 	"gitee_cli/internal/api/user"
+	"gitee_cli/utils"
 	"gitee_cli/utils/tui"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -43,6 +44,17 @@ var ListCmd = &cobra.Command{
 		payload["sort"] = "created_at"
 		payload["direction"] = "desc"
 		_issues, _ := issue.Find(enterprise.Id, payload)
+
+		jsonFlag, _ := cmd.Flags().GetBool("json")
+		if jsonFlag {
+			utils.PrintJSON(_issues)
+			return
+		}
+
+		if len(_issues) == 0 {
+			color.Green("暂无任务")
+			return
+		}
 
 		columns := []table.Column{
 			{Title: "Ident", Width: 8},

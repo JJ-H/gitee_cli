@@ -132,9 +132,27 @@ Available Commands:
 
 Flags:
   -h, --help      help for gitee
+  -j, --json      Output as JSON
   -v, --version   version for gitee
 
 Use "gitee [command] --help" for more information about a command.
+```
+
+### JSON 输出（AI 友好）
+> 所有 `list` 子命令支持 `--json` 或 `-j` 参数，输出紧凑 JSON 格式，便于脚本处理和 AI 解析。
+
+```shell
+# 获取 Issue 列表的 JSON 输出
+gitee issue list --json
+
+# 获取 PR 列表并通过 jq 格式化
+gitee pr list --json | jq
+
+# 获取企业列表
+gitee enterprise list -j
+
+# 获取 SSH Key 列表
+gitee ssh-key list --json
 ```
 
 ### Auth 相关

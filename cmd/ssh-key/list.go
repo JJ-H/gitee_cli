@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitee_cli/internal/api/enterprises"
 	"gitee_cli/internal/api/ssh_key"
+	"gitee_cli/utils"
 	"gitee_cli/utils/tui"
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/fatih/color"
@@ -28,6 +29,12 @@ var ListSshKey = &cobra.Command{
 			os.Exit(0)
 		}
 
+		jsonFlag, _ := cmd.Flags().GetBool("json")
+		if jsonFlag {
+			utils.PrintJSON(sshKeys)
+			return
+		}
+
 		columns := []table.Column{
 			{Title: "ID", Width: 8},
 			{Title: "Key Sha", Width: 38},
@@ -36,7 +43,11 @@ var ListSshKey = &cobra.Command{
 
 		rows := make([]table.Row, 0)
 		for _, key := range sshKeys {
-			rows = append(rows, table.Row{strconv.Itoa(key.Id), key.Key[:50], fmt.Sprintf("https://gitee.com/keys/%d", key.Id)})
+			keySha := key.Key
+			if len(keySha) > 38 {
+				keySha = keySha[:38]
+			}
+			rows = append(rows, table.Row{strconv.Itoa(key.Id), keySha, fmt.Sprintf("https://gitee.com/keys/%d", key.Id)})
 		}
 		if _, err := tui.NewTable(enterprises.Enterprise{}, tui.SSHKey, columns, rows).Run(); err != nil {
 			color.Red("获取 SSH 公钥失败！")

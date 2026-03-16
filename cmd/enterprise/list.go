@@ -2,6 +2,7 @@ package enterprise
 
 import (
 	enterprises2 "gitee_cli/internal/api/enterprises"
+	"gitee_cli/utils"
 	"gitee_cli/utils/tui"
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/fatih/color"
@@ -17,6 +18,17 @@ var ListCmd = &cobra.Command{
 		enterprises, err := enterprises2.List()
 		if err != nil {
 			color.Red("获取企业列表失败！")
+			return
+		}
+
+		jsonFlag, _ := cmd.Flags().GetBool("json")
+		if jsonFlag {
+			utils.PrintJSON(enterprises)
+			return
+		}
+
+		if len(enterprises) == 0 {
+			color.Green("暂无企业")
 			return
 		}
 
