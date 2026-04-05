@@ -127,8 +127,4 @@ func init() {
 		fmt.Printf("初始化配置文件失败，请检查 %s 配置内容！\n", configPath)
 		os.Exit(1)
 	}
-
-	// 兼容 bubbletea border 渲染问题
-	// https://github.com/charmbracelet/lipgloss/issues/40
-	os.Setenv("RUNEWIDTH_EASTASIAN", "0")
 }
