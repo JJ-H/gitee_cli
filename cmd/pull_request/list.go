@@ -43,7 +43,8 @@ var ListCmd = &cobra.Command{
 			fmt.Printf("该 commit 由 PR: 「%v」 合入，访问地址: %s\n", utils.Green(pr.Title), utils.Blue(pr.HtmlUrl))
 			return
 		}
-		pullRequests := pull_request.List(scope)
+		limit, _ := cmd.Flags().GetInt("limit")
+		pullRequests := pull_request.List(scope, limit)
 		if keyword != "" {
 			pullRequests = pull_request.FuzzySearch(pullRequests, keyword)
 		}
@@ -106,9 +107,9 @@ var ListCmd = &cobra.Command{
 
 func init() {
 	ListCmd.Flags().StringP("keyword", "k", "", "filter pr by keyword")
-	//ListCmd.Flags().BoolP("reviewed", "r", false, "filter pr by review state")
 	ListCmd.Flags().StringP("scope", "s", "", "filter pr by scope (owner)")
 	ListCmd.Flags().StringP("commit", "c", "", "find pr by commit")
 	ListCmd.Flags().BoolP("open", "o", false, "open in browser, only effective for searching pr via commit sha")
 	ListCmd.Flags().BoolP("convert", "", false, "transfer url in enterprise")
+	ListCmd.Flags().IntP("limit", "l", 100, "max number of pull requests to fetch")
 }

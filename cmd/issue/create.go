@@ -39,15 +39,15 @@ var CreateCmd = &cobra.Command{
 		}
 
 		if parentKeyWord != "" {
-			candidateTasks, _ = issue.Find(enterprise.Id, map[string]string{
-				"search": parentKeyWord,
-			})
+			if found, err := issue.Find(enterprise.Id, map[string]string{"search": parentKeyWord}); err == nil {
+				candidateTasks = found
+			}
 		}
 
 		if assigneeKeyWord != "" {
-			candidateAssignees, _ = member.Find(enterprise.Id, map[string]string{
-				"search": assigneeKeyWord,
-			})
+			if found, err := member.Find(enterprise.Id, map[string]string{"search": assigneeKeyWord}); err == nil {
+				candidateAssignees = found
+			}
 		}
 
 		optionMap := make(map[string]int, 0)

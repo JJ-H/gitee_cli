@@ -1,8 +1,6 @@
 package issue
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"gitee_cli/internal/api/issue_state"
 	"gitee_cli/internal/api/issue_type"
@@ -10,7 +8,7 @@ import (
 	"gitee_cli/utils/http_utils"
 )
 
-const Endpoint = "https://api.gitee.com/enterprises/%d/issues"
+const endpoint = "https://api.gitee.com/enterprises/%d/issues"
 
 type Issue struct {
 	Id          int                    `json:"id"`
@@ -23,91 +21,51 @@ type Issue struct {
 	IssueType   issue_type.IssueType   `json:"issue_type"`
 }
 
+type listRes struct {
+	Data       []Issue `json:"data"`
+	TotalCount int     `json:"total_count"`
+}
+
 func Find(enterpriseId int, params map[string]string) ([]Issue, error) {
-	url := fmt.Sprintf(Endpoint, enterpriseId)
-	giteeClient := http_utils.NewGiteeClient("GET", url, params, nil)
-	giteeClient.SetCookieAuth()
-
-	err := giteeClient.Do()
-	if err != nil || giteeClient.IsFail() {
-		return []Issue{}, err
+	url := fmt.Sprintf(endpoint, enterpriseId)
+	g := http_utils.NewGiteeClient("GET", url, params, nil)
+	g.SetCookieAuth()
+	r, err := http_utils.DoAndDecode[listRes](g, "获取任务列表失败")
+	if err != nil {
+		return nil, err
 	}
-
-	data, _ := giteeClient.GetRespBody()
-	type res struct {
-		Data       []Issue `json:"data"`
-		TotalCount int     `json:"total_count"`
-	}
-
-	var _data res
-
-	json.Unmarshal(data, &_data)
-
-	return _data.Data, nil
+	return r.Data, nil
 }
 
 func Create(enterpriseId int, payload map[string]interface{}) (Issue, error) {
-	url := fmt.Sprintf(Endpoint, enterpriseId)
-	giteeClient := http_utils.NewGiteeClient("POST", url, nil, payload)
-	giteeClient.SetCookieAuth()
-
-	giteeClient.Do()
-
-	if giteeClient.IsFail() {
-		return Issue{}, errors.New("创建工作项失败！")
-	}
-
-	issue := Issue{}
-
-	data, _ := giteeClient.GetRespBody()
-	json.Unmarshal(data, &issue)
-
-	return issue, nil
+	url := fmt.Sprintf(endpoint, enterpriseId)
+	g := http_utils.NewGiteeClient("POST", url, nil, payload)
+	g.SetCookieAuth()
+	return http_utils.DoAndDecode[Issue](g, "创建工作项失败")
 }
 
 func Update(enterpriseId int, issueId int, payload map[string]interface{}) (Issue, error) {
 	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issues/%d", enterpriseId, issueId)
-	giteeClient := http_utils.NewGiteeClient("PUT", url, nil, payload)
-	giteeClient.SetCookieAuth()
+	g := http_utils.NewGiteeClient("PUT", url, nil, payload)
+	g.SetCookieAuth()
+	return http_utils.DoAndDecode[Issue](g, "更新工作项失败")
+}
 
-	giteeClient.Do()
-
-	if giteeClient.IsFail() {
-		return Issue{}, errors.New("更新工作项失败！")
-	}
-
-	issue := Issue{}
-
-	data, _ := giteeClient.GetRespBody()
-	json.Unmarshal(data, &issue)
-
-	return issue, nil
+func Detail(enterpriseId int, ident string) (Issue, error) {
+	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issues/%s?qt=ident", enterpriseId, ident)
+	g := http_utils.NewGiteeClient("GET", url, nil, nil)
+	g.SetCookieAuth()
+	return http_utils.DoAndDecode[Issue](g, "获取工作项详情失败")
 }
 
 func FillOptions(issues []Issue, optionMap map[string]int, options []string) (map[string]int, []string) {
 	if len(issues) == 0 {
 		return optionMap, options
 	}
-
 	for _, issue := range issues {
 		key := fmt.Sprintf("[%s] %s", issue.Ident, issue.Title)
 		optionMap[key] = issue.Id
 		options = append(options, key)
 	}
 	return optionMap, options
-}
-
-func Detail(enterpriseId int, ident string) (Issue, error) {
-	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issues/%s?qt=ident", enterpriseId, ident)
-	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
-	giteeClient.SetCookieAuth()
-	giteeClient.Do()
-	if giteeClient.IsFail() {
-		return Issue{}, errors.New("获取工作想失败！")
-	}
-
-	data, _ := giteeClient.GetRespBody()
-	issue := Issue{}
-	json.Unmarshal(data, &issue)
-	return issue, nil
 }

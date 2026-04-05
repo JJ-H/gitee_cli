@@ -1,7 +1,6 @@
 package issue_type
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"gitee_cli/internal/api/enterprises"
@@ -35,32 +34,26 @@ func List(issueType int, entPath string) ([]IssueType, error) {
 	}
 	category := typeCategory(issueType)
 	if category == "" {
-		return nil, errors.New("无效的任务类型！")
+		return nil, errors.New("无效的任务类型")
 	}
-	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issue_types/enterprise_issue_types?category=%s&page=1&per_page=1000&state=1", ent.Id, category)
-	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
-	giteeClient.SetCookieAuth()
-	if err := giteeClient.Do(); err != nil {
-		return nil, err
-	}
-
-	var res = struct {
+	type res struct {
 		Data       []IssueType `json:"data"`
 		TotalCount int         `json:"total_count"`
-	}{}
-
-	data, _ := giteeClient.GetRespBody()
-
-	json.Unmarshal(data, &res)
-
-	return res.Data, nil
+	}
+	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issue_types/enterprise_issue_types?category=%s&page=1&per_page=100&state=1", ent.Id, category)
+	g := http_utils.NewGiteeClient("GET", url, nil, nil)
+	g.SetCookieAuth()
+	r, err := http_utils.DoAndDecode[res](g, "获取任务类型失败")
+	if err != nil {
+		return nil, err
+	}
+	return r.Data, nil
 }
 
 func FillOptions(issueTypes []IssueType, optionMap map[string]int, options []string) (map[string]int, []string) {
 	if len(issueTypes) == 0 {
 		return optionMap, options
 	}
-
 	for _, issueType := range issueTypes {
 		optionMap[issueType.Title] = issueType.Id
 		options = append(options, issueType.Title)
@@ -70,13 +63,11 @@ func FillOptions(issueTypes []IssueType, optionMap map[string]int, options []str
 
 func FetchTemplate(issueTypeId, entId int) (string, error) {
 	url := fmt.Sprintf("https://api.gitee.com/enterprises/%d/issue_types/%d", entId, issueTypeId)
-	giteeClient := http_utils.NewGiteeClient("GET", url, nil, nil)
-	giteeClient.SetCookieAuth()
-	if err := giteeClient.Do(); err != nil {
-		return "", errors.New("获取模板失败！")
+	g := http_utils.NewGiteeClient("GET", url, nil, nil)
+	g.SetCookieAuth()
+	issueType, err := http_utils.DoAndDecode[IssueType](g, "获取模板失败")
+	if err != nil {
+		return "", err
 	}
-	issueType := IssueType{}
-	data, _ := giteeClient.GetRespBody()
-	json.Unmarshal(data, &issueType)
 	return issueType.Template, nil
 }

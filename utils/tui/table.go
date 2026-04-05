@@ -2,12 +2,10 @@ package tui
 
 import (
 	"fmt"
-	"gitee_cli/config"
 	"gitee_cli/internal/api/enterprises"
 	"gitee_cli/internal/api/issue"
 	"gitee_cli/internal/api/issue_state"
 	"gitee_cli/internal/api/pull_request"
-	"gitee_cli/utils/git_utils"
 	"gitee_cli/utils/tui/selector_tui"
 	"github.com/atotto/clipboard"
 	"github.com/charmbracelet/bubbles/key"
@@ -151,26 +149,18 @@ func (t Table) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return t, tea.Quit
 				}
 			} else if t.ResourceType == PullRequest {
-				path, _ := git_utils.ParseCurrentRepo()
-				if path == "" {
-					path = config.Conf.DefaultPathWithNamespace
-				}
 				t.SelectedKey = t.table.SelectedRow()[1]
-				if pullRequerst, err := pull_request.Detail(t.SelectedKey, path); err == nil {
-					NewPager(pullRequerst.Title, pullRequerst.Body, Markdown).Run()
+				if pr, err := pull_request.Detail(t.SelectedKey, pull_request.RepoPath()); err == nil {
+					NewPager(pr.Title, pr.Body, Markdown).Run()
 				} else {
-					color.Red("获取pr详情失败！")
+					color.Red("获取 PR 详情失败！")
 					return t, tea.Quit
 				}
 			}
 		case "d":
 			if t.ResourceType == PullRequest {
-				path, _ := git_utils.ParseCurrentRepo()
 				t.SelectedKey = t.table.SelectedRow()[1]
-				if path == "" {
-					path = config.Conf.DefaultPathWithNamespace
-				}
-				if diff, err := pull_request.FetchPatchContent(t.SelectedKey, path); err == nil {
+				if diff, err := pull_request.FetchPatchContent(t.SelectedKey, pull_request.RepoPath()); err == nil {
 					NewPager(t.table.SelectedRow()[0], diff, Diff).Run()
 				} else {
 					color.Red(err.Error())
@@ -183,10 +173,7 @@ func (t Table) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				url := fmt.Sprintf("https://e.gitee.com/%s/dashboard?issue=%s", t.Enterprise.Path, t.SelectedKey)
 				browser.OpenURL(url)
 			} else if t.ResourceType == PullRequest {
-				path, _ := git_utils.ParseCurrentRepo()
-				if path == "" {
-					path = config.Conf.DefaultPathWithNamespace
-				}
+				path := pull_request.RepoPath()
 				t.SelectedKey = t.table.SelectedRow()[1]
 				url := fmt.Sprintf("https://gitee.com/%s/pulls/%s", path, t.SelectedKey)
 				if os.Getenv("CONVERT_ENT_URL") != "" {

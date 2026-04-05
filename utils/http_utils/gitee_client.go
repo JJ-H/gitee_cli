@@ -118,3 +118,27 @@ func (g *GiteeClient) GetRespBody() ([]byte, error) {
 func (g *GiteeClient) SetCookieAuth() {
 	g.CookieAuth = true
 }
+
+func DoAndDecode[T any](g *GiteeClient, errMsg string) (T, error) {
+	var zero T
+	if err := g.Do(); err != nil {
+		return zero, fmt.Errorf("%s: %w", errMsg, err)
+	}
+	if g.IsFail() {
+		body, _ := g.GetRespBody()
+		var apiErr ErrMsgV5
+		if json.Unmarshal(body, &apiErr) == nil && apiErr.Message != "" {
+			return zero, fmt.Errorf("%s: %s", errMsg, apiErr.Message)
+		}
+		return zero, fmt.Errorf("%s: HTTP %d", errMsg, g.Response.StatusCode)
+	}
+	body, err := g.GetRespBody()
+	if err != nil {
+		return zero, fmt.Errorf("%s: failed to read response: %w", errMsg, err)
+	}
+	var result T
+	if err := json.Unmarshal(body, &result); err != nil {
+		return zero, fmt.Errorf("%s: failed to parse response: %w", errMsg, err)
+	}
+	return result, nil
+}
