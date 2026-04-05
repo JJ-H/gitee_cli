@@ -23,13 +23,17 @@ build:
 	@echo "Build complete."
 	$(call show_usage_info)
 
+install: build
+	sudo cp bin/gitee /usr/local/bin/gitee
+	@echo "Installed to /usr/local/bin/gitee"
+
 # Clean up generated binaries
 clean:
 	rm -f bin/gitee
 	@echo "Clean up complete."
 
 
-.PHONY: build-all-platforms
+.PHONY: build-all-platforms install
 build-all-platforms:
 	$(foreach os,$(OSES),$(foreach arch,$(ARCHS), \
 		GOOS=$(os) GOARCH=$(arch) go build $(BUILD_FLAGS) -o $(BINARY_NAME)-$(os)-$(arch)$(if $(findstring windows,$(os)),.exe,) main.go; \
