@@ -3,13 +3,17 @@ package http_utils
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"gitee_cli/config"
 	"github.com/fatih/color"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
+
+const defaultTimeout = 30 * time.Second
 
 type GiteeClient struct {
 	Url        string
@@ -19,6 +23,7 @@ type GiteeClient struct {
 	Response   *http.Response
 	CookieAuth bool
 	Query      map[string]string
+	initErr    error
 }
 
 type ErrMsgV5 struct {
@@ -28,7 +33,7 @@ type ErrMsgV5 struct {
 func NewGiteeClient(method, urlString string, query map[string]string, payload interface{}) *GiteeClient {
 	parsedUrl, err := url.Parse(urlString)
 	if err != nil {
-		panic(err)
+		return &GiteeClient{initErr: fmt.Errorf("invalid URL %q: %w", urlString, err)}
 	}
 	if query != nil {
 		queryParams := parsedUrl.Query()
@@ -50,10 +55,18 @@ func (g *GiteeClient) SetHeaders(headers map[string]string) {
 }
 
 func (g *GiteeClient) Do() error {
-	// 多次调用首先置空
+	if g.initErr != nil {
+		return g.initErr
+	}
 	g.Response = nil
-	_payload, _ := json.Marshal(g.Payload)
-	req, _ := http.NewRequest(g.Method, g.Url, bytes.NewReader(_payload))
+	_payload, err := json.Marshal(g.Payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal payload: %w", err)
+	}
+	req, err := http.NewRequest(g.Method, g.Url, bytes.NewReader(_payload))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
 	req.Header.Set("Content-Type", "application/json")
 	cookie := config.Conf.CookiesJar
 	accessToken := config.Conf.AccessToken
@@ -68,12 +81,10 @@ func (g *GiteeClient) Do() error {
 	for key, value := range g.Headers {
 		req.Header.Set(key, value)
 	}
-	client := &http.Client{}
+	client := &http.Client{Timeout: defaultTimeout}
 
-	var resp *http.Response
-	var err error
-
-	if resp, err = client.Do(req); err != nil {
+	resp, err := client.Do(req)
+	if err != nil {
 		return err
 	}
 	g.Response = resp
@@ -86,15 +97,13 @@ func (g *GiteeClient) IsSuccess() bool {
 	}
 
 	successMap := map[int]struct{}{
-		http.StatusOK:        struct{}{},
-		http.StatusCreated:   struct{}{},
-		http.StatusNoContent: struct{}{},
+		http.StatusOK:        {},
+		http.StatusCreated:   {},
+		http.StatusNoContent: {},
 	}
 
-	if _, ok := successMap[g.Response.StatusCode]; ok {
-		return true
-	}
-	return false
+	_, ok := successMap[g.Response.StatusCode]
+	return ok
 }
 
 func (g *GiteeClient) IsFail() bool {
@@ -102,7 +111,8 @@ func (g *GiteeClient) IsFail() bool {
 }
 
 func (g *GiteeClient) GetRespBody() ([]byte, error) {
-	return ioutil.ReadAll(g.Response.Body)
+	defer g.Response.Body.Close()
+	return io.ReadAll(g.Response.Body)
 }
 
 func (g *GiteeClient) SetCookieAuth() {

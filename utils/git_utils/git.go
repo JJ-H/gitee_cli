@@ -36,7 +36,9 @@ func GetCurrentBranch() (string, error) {
 	var output bytes.Buffer
 	catFile.Stdout = &output
 	extractBranch.Stdin = &output
-	err := catFile.Run()
+	if err := catFile.Run(); err != nil {
+		return "", fmt.Errorf("读取 .git/HEAD 失败: %w", err)
+	}
 	res, err := extractBranch.CombinedOutput()
 	if err != nil {
 		fmt.Println(err)
@@ -46,20 +48,28 @@ func GetCurrentBranch() (string, error) {
 }
 
 func ParseCurrentRepo() (string, error) {
-	var err error
-	var pathWithNamespace string
 	if !IsGitDir() {
 		return "", errors.New("请在仓库目录下执行该命令！")
 	}
 	gitRemote := exec.Command("git", "remote")
 	gitRemote.Dir = CurrentDir()
-	output, err := gitRemote.CombinedOutput()
-	getUrl := exec.Command("git", "remote", "get-url", strings.Split(string(output), "\n")[0])
+	remoteOutput, err := gitRemote.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("获取 git remote 失败: %w", err)
+	}
+	remoteName := strings.Split(strings.TrimSpace(string(remoteOutput)), "\n")[0]
+	if remoteName == "" {
+		return "", errors.New("未找到 git remote，请先添加 remote")
+	}
+	getUrl := exec.Command("git", "remote", "get-url", remoteName)
 	getUrl.Dir = CurrentDir()
-	output, err = getUrl.CombinedOutput()
-	gitUrl := strings.Trim(string(output), "\n")
+	urlOutput, err := getUrl.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("获取 remote URL 失败: %w", err)
+	}
+	gitUrl := strings.TrimSpace(string(urlOutput))
 	gitUrl = strings.TrimPrefix(gitUrl, HTTP_PREFIX)
 	gitUrl = strings.TrimPrefix(gitUrl, SSH_PREFIX)
-	pathWithNamespace = strings.TrimSuffix(gitUrl, GIT_SUFFIX)
-	return pathWithNamespace, err
+	pathWithNamespace := strings.TrimSuffix(gitUrl, GIT_SUFFIX)
+	return pathWithNamespace, nil
 }
