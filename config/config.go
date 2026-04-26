@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -117,6 +118,11 @@ func init() {
 
 	config, err := os.ReadFile(configPath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			os.MkdirAll(filepath.Dir(configPath), 0755)
+			os.WriteFile(configPath, []byte{}, 0644)
+			return
+		}
 		fmt.Printf("读取配置文件失败！请检查 %s 配置内容！\n", configPath)
 		os.Exit(1)
 	}
